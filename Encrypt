@@ -1,0 +1,955 @@
+
+for i, bot in pairs(getBots()) do
+    if getBot().name:upper() == bot.name:upper() then
+        indexbot = i
+    end
+end
+
+getBot().auto_reconnect = false
+getBot().legit_mode = false
+getBot().collect_range = 3
+getBot().collect_interval = 200
+getBot().object_collect_delay = 110
+getBot().auto_collect = true
+dropX = dropItemX - 1
+dropY = dropItemY - 1
+posX = middleX - 1
+posY = middleY - 1
+itemX = dropberryX - 1
+itemY = dropberryY - 1
+index = 1
+local tileIngre = 0
+local tileDrop = 0
+local setting = {}
+setting.backup = 1
+backups = {}
+setting.idxs = 4
+
+for i = 1,switchperbot do
+    table.insert(backups,switchbot[math.floor((indexbot - 1) * switchperbot + i)])
+end
+
+findItem = function(id)
+    return getBot():getInventory():getItemCount(id)
+end
+
+place = function(id,ex,ye)
+    getBot():place(getBot().x+ex,getBot().y+ye,id)
+end
+
+punch = function(ex,ye)
+    getBot():hit(getBot().x+ex,getBot().y+ye)
+end
+
+move = function(x,y)
+    getBot():moveTo(x,y)
+end
+
+findPath = function(x,y)
+    getBot():findPath(x,y)
+end
+
+sendPacket = function(int,str)
+    return getBot():sendPacket(int,str)
+end
+
+setting.writeFile = function(info,text)
+    local file = io.open(""..info..".txt","a")
+    file:write(text.."\n")
+    file:close()
+end
+
+setting.recycles = function()
+    for i, trash in ipairs(trashList) do
+        if findItem(trash) > amount then
+			getBot():sendPacket(2,"action|trash\n|itemID|" .. trash)
+			sleep(1000)
+			getBot():sendPacket(2,"action|dialog_return\ndialog_name|trash_item\nitemID|" .. trash .. "|\ncount|" .. findItem(trash))
+			sleep(1000)
+        end
+    end
+end
+
+setting.reconnect = function(world,id,x,y)
+    if getBot():getPing() == 0 then
+        getBot():disconnect()
+        sleep(4000)
+    end
+    if not getBot():isInWorld(world:upper()) and getBot().status == BotStatus.online then 
+        local count = 0
+        while not getBot():isInWorld(world:upper()) do
+            sendPacket(3,"action|join_request\nname|"..world:upper().."\ninvitedWorld|0")
+            sleep(delaywarp)
+            if not getBot():isInWorld(world:upper()) then 
+                count = count + 1
+                if count > 5 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if id ~= "" then
+            local stucks = 0
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                sendPacket(3,"action|join_request\nname|" ..world:upper().."|"..id:upper().."\ninvitedWorld|0")
+                sleep(delaywarp)
+                if stucks > 3 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if x and y then
+            while getBot().x ~= x or getBot().y ~= y do
+                findPath(x,y)
+                sleep(150)
+            end
+        end
+    end
+    if getBot().status ~= BotStatus.online then
+        while getBot().status ~= BotStatus.online do
+            getBot():connect()
+            sleep(delayreconnect)
+            if getBot().status == BotStatus.account_banned then
+                getBot():stopScript()
+            end
+        end
+        local counts = 0
+        while not getBot():isInWorld(world:upper()) do
+            sendPacket(3,"action|join_request\nname|"..world:upper().."\ninvitedWorld|0")
+            sleep(delaywarp)
+            if not getBot():isInWorld(world:upper()) then 
+                counts = counts + 1
+                if counts > 5 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if id ~= "" then
+            local stuckk = 0
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                sendPacket(3,"action|join_request\nname|" ..world:upper().."|"..id:upper().."\ninvitedWorld|0")
+                sleep(delaywarp)
+                if stuckk > 3 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if x and y then
+            while getBot().x ~= x or getBot().y ~= y do
+                findPath(x,y)
+                sleep(150)
+            end
+        end
+    end
+    if getTile(getBot().x,getBot().y).fg == 6 then
+        local stuck = 0
+        if id ~= "" then
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                sendPacket(3,"action|join_request\nname|" ..world:upper().."|"..id:upper().."\ninvitedWorld|0")
+                sleep(delaywarp)
+                if stuck > 3 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if x and y then
+            while getBot().x ~= x or getBot().y ~= y do
+                findPath(x,y)
+                sleep(150)
+            end
+        end
+    end
+end
+
+setting.reconnectcook = function(world,id,x,y)
+    if getBot():getPing() == 0 then
+        getBot():disconnect()
+        sleep(4000)
+    end
+    if not getBot():isInWorld(world:upper()) and getBot().status == BotStatus.online then 
+        local count = 0
+        while not getBot():isInWorld(world:upper()) do
+            sendPacket(3,"action|join_request\nname|"..world:upper().."\ninvitedWorld|0")
+            sleep(delaywarp)
+            if not getBot():isInWorld(world:upper()) then 
+                count = count + 1
+                if count > 5 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if id ~= "" then
+            local stucks = 0
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                sendPacket(3,"action|join_request\nname|" ..world:upper().."|"..id:upper().."\ninvitedWorld|0")
+                sleep(delaywarp)
+                if stucks > 3 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if x and y then
+            while getBot().x ~= x or getBot().y ~= y do
+                findPath(x,y)
+                sleep(150)
+            end
+        end
+    end
+    if getBot().status ~= BotStatus.online then
+        while getBot().status ~= BotStatus.online do
+            getBot():connect()
+            sleep(delayreconnect)
+            if getBot().status == BotStatus.account_banned then
+                getBot():stopScript()
+            end
+        end
+        local counts = 0
+        while not getBot():isInWorld(world:upper()) do
+            sendPacket(3,"action|join_request\nname|"..world:upper().."\ninvitedWorld|0")
+            sleep(delaywarp)
+            if not getBot():isInWorld(world:upper()) then 
+                counts = counts + 1
+                if counts > 5 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if id ~= "" then
+            local stuckk = 0
+            while getTile(getBot().x,getBot().y).fg == 6 do
+                sendPacket(3,"action|join_request\nname|" ..world:upper().."|"..id:upper().."\ninvitedWorld|0")
+                sleep(delaywarp)
+                if stuckk > 3 then
+                    getBot():stopScript()
+                end
+            end
+        end
+        if x and y then
+            while getBot().x ~= x or getBot().y ~= y do
+                findPath(x,y)
+                sleep(150)
+            end
+        end
+        for k = -2,2 do
+            for n = -2,2 do
+                if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                    getBot():hit(getBot().x+n,getBot().y+k)
+                    sleep(400)
+                end
+            end
+        end
+        setting.mainscript()
+    end
+end
+
+setting.warp = function(world,door,cooldown)
+    name = world
+    if door ~= "" then
+        name = name .. "|" ..door
+    end
+    if not getBot():isInWorld(world:upper()) then
+        addEvent(Event.variantlist, function(variant, netid)
+            if variant:get(0):getString() == "OnConsoleMessage" then
+                if variant:get(1):getString():lower():find("inaccessible.") then
+                    nuked = true
+                end
+                if variant:get(1):getString():lower():find("experiencing ") then
+                    subserver = true
+                end
+            end
+        end)
+        while not getBot():isInWorld(world:upper()) and not nuked and not subserver do
+            if getBot():getPing() == 0 then
+                getBot():disconnect()
+                sleep(2000)
+            end
+            while getBot().status ~= BotStatus.online do
+                getBot():connect()
+                sleep(delayreconnect)
+                if getBot().status == BotStatus.account_banned then
+                    getBot():stopScript()
+                end
+            end
+            sendPacket(3,"action|join_request\nname|"..name.."\ninvitedWorld|0")
+            listenEvents(8)
+            sleep(cooldown)
+        end
+        removeEvents()
+        sleep(2000)
+    end
+    if getBot():isInWorld(world:upper()) then
+        if door ~= "" then
+            local stuck = 0
+            while getTile(getBot().x,getBot().y).fg == 6 and not wrong do
+                if getBot():getPing() == 0 then
+                    getBot():disconnect()
+                    sleep(4000)
+                end
+                while getBot().status ~= BotStatus.online do
+                    getBot():connect()
+                    sleep(delayreconnect)
+                    if getBot().status == BotStatus.account_banned then
+                        getBot():stopScript()
+                    end
+                end
+                sendPacket(3,"action|join_request\nname|"..name.."\ninvitedWorld|0")
+                sleep(cooldown)
+                stuck = stuck + 1
+                if stuck == 5 then
+                    wrong = true
+                end
+            end
+        end
+        for i, tile in pairs(getBot():getWorld():getTiles()) do
+            if tile:hasFlag(4096) then
+                fire = true
+            end
+        end
+    end
+end
+
+setting.split = function(str, ptr)
+    if not ptr then 
+        ptr = "%s"
+    end
+    local tbl = {}
+    for string in string.gmatch(str, ptr) do
+        table.insert(tbl, string) 
+    end
+    return tbl
+end
+
+setting.storingGourmet = function()
+    world = setting.split(worldGourmet[index],"[^:]+")[1]
+    door = setting.split(worldGourmet[index],"[^:]+")[2]
+    setting.warp(world,door,delaywarp)
+    for i,tile in pairs(getBot():getWorld():getTiles()) do
+        if tile.fg == 0 or tile.bg == 0 then
+            ::DROPS::
+            findPath(dropX + (tileIngre),dropY)
+            sleep(1000)
+            local count = 0
+            setting.reconnect(world,door,dropX + (tileIngre),dropY)
+            if dropX + (tileIngre) >= 98 then
+                dropY = dropY - 1
+                tileDrop = 0
+            end
+            while findItem(7752) > 0 do
+                getBot():drop(7752,200)
+                sleep(2000)
+                setting.reconnect(world,door,dropX + (tileIngre),dropY)
+                count = count + 1
+                if count >= 2 then
+                    tileIngre = tileIngre + 1
+                    goto DROPS
+                end
+            end
+        end
+        if findItem(7752) == 0 then
+            break
+        end
+    end
+end
+
+setting.storingitems = function()
+    world = setting.split(worldCook[index],"[^:]+")[1]
+    door = setting.split(worldCook[index],"[^:]+")[2]
+    for i,tile in pairs(getBot():getWorld():getTiles()) do
+        if tile.fg == 0 or tile.bg == 0 then
+            ::DROPS::
+            findPath(itemX + (tileDrop),itemY)
+            sleep(1000)
+            local count = 0
+            setting.reconnect(world,door,itemX + (tileDrop),itemY)
+            if itemX + (tileDrop) >= 98 then
+                itemY = itemY - 1
+                tileDrop = 0
+            end
+            while findItem(4596) > 0 do
+                getBot():drop(4596,200)
+                sleep(2000)
+                setting.reconnect(world,door,itemX + (tileDrop),itemY)
+                count = count + 1
+                if count >= 2 then
+                    tileDrop = tileDrop + 1
+                    goto DROPS
+                end
+            end
+        end
+        if findItem(4596) == 0 then
+            break
+        end
+    end
+end
+
+setting.storingingre = function()
+    world = setting.split(worldIngre[index],"[^:]+")[1]
+    door = setting.split(worldIngre[index],"[^:]+")[2]
+    setting.warp(world,door,delaywarp)
+    for y, pack in ipairs(itemId) do
+        for i,tile in pairs(getBot():getWorld():getTiles()) do
+            if tile.fg == 0 or tile.bg == 0 then
+                ::DROPS::
+                findPath(dropX + (tileIngre),dropY)
+                sleep(1000)
+                local count = 0
+                setting.reconnect(world,door,dropX + (tileIngre),dropY)
+                if dropX + (tileIngre) >= 98 then
+                    dropY = dropY - 1
+                    tileDrop = 0
+                end
+                while findItem(pack) > 0 do
+                    getBot():drop(pack,200)
+                    sleep(2000)
+                    setting.reconnect(world,door,dropX + (tileIngre),dropY)
+                    count = count + 1
+                    if count >= 2 then
+                        tileIngre = tileIngre + 1
+                        goto DROPS
+                    end
+                end
+            end
+            if findItem(pack) == 0 then
+                break
+            end
+        end
+    end
+end
+
+setting.takegourmet = function()
+    ::BACK::
+    world = setting.split(worldGourmet[index],"[^:]+")[1]
+    door = setting.split(worldGourmet[index],"[^:]+")[2]
+    setting.warp(world,door,delaywarp)
+    if not subserver then
+        if not nuked then
+            if not wrong then
+                if findItem(7752) == 0 then
+                    for _, obj in pairs(getBot():getWorld():getObjects()) do
+                        if obj.id == 7752 then
+                            findPath(math.floor(obj.x / 32),math.floor(obj.y / 32))
+                            sleep(1000)
+                            getBot():collect(2)
+                            sleep(1000)
+                            setting.reconnect(world,door,math.floor(obj.x / 32),math.floor(obj.y / 32))
+                        end
+                        if findItem(7752) > 0  then
+                            break
+                        end
+                    end
+                    move(1,0)
+                    sleep(1000)
+                    getBot():setDirection(true)
+                    getBot():wear(7752)
+                    sleep(1000)
+                    getBot():drop(7752,findItem(7752) - 1)
+                    sleep(1000)
+                end
+            else
+                wrong = false
+                getBot():stopScript()
+            end
+        else
+            nuked = false
+            getBot():stopScript()
+        end
+    else
+        subserver = false
+        sleep(120000)
+        goto BACK
+    end
+end
+
+setting.takeingre = function()
+    ::Here::
+    world = setting.split(worldIngre[index],"[^:]+")[1]
+    door = setting.split(worldIngre[index],"[^:]+")[2]
+    setting.warp(world,door,delaywarp)
+    if not subserver then
+        if not nuked then
+            if not wrong then
+                for _, pack in pairs(itemId) do
+                    while findItem(pack) ~= 200 do
+                        for _, object in pairs(getBot():getWorld():getObjects()) do
+                            if object.id == pack then
+                                findPath(math.floor((object.x)/32), math.floor((object.y)/32))
+                                sleep(1000)
+                                getBot():collect(2)
+                                sleep(1000)
+                                setting.reconnect(world,doorstoragetake,math.floor((object.x)/32), math.floor((object.y)/32))
+                            end
+                            if findItem(pack) == 200 then
+                                break
+                            end
+                        end
+                    end
+                end
+            else
+                wrong = false
+                getBot():stopScript()
+            end
+        else
+            nuked = false
+            getBot():stopScript()
+        end
+    else
+        subserver = false
+        sleep(120000)
+        goto Here
+    end
+end
+
+setting.htree = function(tree,amount)
+    local attempt = 0
+    local param = getBot():getWorld().name
+    for _,tile in pairs(getBot():getWorld():getTiles()) do
+        if tile.fg == tree then
+            getBot():findPath(tile.x,tile.y)
+            sleep(30)
+            setting.reconnect(param,"",tile.x,tile.y)
+            while getBot():getWorld():getTile(tile.x,tile.y).fg ~= 0 do
+                getBot():hit(tile.x,tile.y)
+                sleep(200)
+                setting.reconnect(param,"",tile.x,tile.y)
+            end
+            attempt = attempt + 1
+        end
+        if attempt >= amount then
+            break
+        end
+    end
+end
+
+setting.placedirt = function()
+    local param = getBot():getWorld().name
+    for tilex = 35, 50 do
+        getBot():findPath(tilex,17)
+        sleep(30)
+        setting.reconnect(param,"",tilex,17)
+        while getBot():getWorld():getTile(tilex,18).fg == 0 do
+            getBot():place(tilex,18,2)
+            sleep(200)
+            setting.reconnect(param,"",tilex,17)
+        end
+    end
+end
+
+setting.dirts = function(amount)
+    local attempt = 0
+    local param = getBot():getWorld().name
+    for tiley = 19, 53, 1 do
+        for tilex = 0, 6, 1 do
+            if getBot():getWorld():getTile(tilex,tiley).fg == 2 then
+                getBot():findPath(tilex,tiley - 1)
+                sleep(30)
+                setting.reconnect(param,"",tilex,tiley - 1)
+                while getBot():getWorld():getTile(tilex,tiley).fg ~= 0 do
+                    getBot():hit(tilex,tiley)
+                    sleep(200)
+                    setting.reconnect(param,"",tilex,tiley - 1)
+                end
+                attempt = attempt + 1
+            end
+            if attempt >= amount then
+                break
+            end
+        end
+        if attempt >= amount then
+            break
+        end
+    end
+end
+
+setting.findDirt = function(amount)
+    local param = getBot():getWorld().name
+    for tiley = 19, 53, 1 do
+        for tilex = 0, 6, 1 do
+            if getBot():getWorld():getTile(tilex,tiley).fg ~= 0 then
+                getBot():findPath(tilex,tiley - 1)
+                sleep(30)
+                setting.reconnect(param,"",tilex,tiley - 1)
+                while getBot():getWorld():getTile(tilex,tiley).fg ~= 0 do
+                    getBot():hit(tilex,tiley)
+                    sleep(200)
+                    setting.reconnect(param,"",tilex,tiley - 1)
+                end
+            end
+            if getBot():getInventory():getItemCount(3) >= amount then
+                break
+            end
+        end
+        if getBot():getInventory():getItemCount(3) >= amount then
+            break
+        end
+    end
+end
+
+setting.placeWood = function()
+    local param = getBot():getWorld().name
+    for tilex = 35, 56 do
+        getBot():findPath(tilex,14)
+        sleep(30)
+        setting.reconnect(param,"",tilex,14)
+        while getBot():getWorld():getTile(tilex,15).fg == 0 do
+            getBot():place(tilex,15,100)
+            sleep(200)
+            setting.reconnect(param,"",tilex,14)
+        end
+    end
+end
+
+setting.breakWood = function()
+    local param = getBot():getWorld().name
+    for tilex = 35, 56 do
+        getBot():findPath(tilex,14)
+        sleep(30)
+        setting.reconnect(param,"",tilex,14)
+        while getBot():getWorld():getTile(tilex,15).fg ~= 0 do
+            getBot():hit(tilex,15)
+            sleep(200)
+            setting.reconnect(param,"",tilex,14)
+        end
+        if getBot():getInventory():getItemCount(101) > 4 then
+            break
+        end
+    end
+end
+
+setting.planting = function(tree,amount)
+    local param = getBot():getWorld().name
+    local attempt = 0
+    for tilex = 35, 50 do
+        if getBot():getWorld():getTile(tilex,17).fg == 0 then
+            getBot():findPath(tilex,17)
+            sleep(30)
+            setting.reconnect(param,"",tilex,17)
+            while getBot():getWorld():getTile(tilex,17).fg == 0 do
+                getBot():place(tilex,17,tree)
+                sleep(200)
+                setting.reconnect(param,"",tilex,17)
+            end
+            attempt = attempt + 1
+        end
+        if attempt >= amount then
+            break
+        end
+    end
+end
+
+setting.ttree = function(tree)
+    local attempt = 0
+    local param = getBot():getWorld().name
+    for tilex = 35, 50 do
+        if getBot():getWorld():getTile(tilex,17).fg ~= 0 then
+            getBot():findPath(tilex,17)
+            sleep(30)
+            setting.reconnect(param,"",tilex,17)
+            while getBot():getWorld():getTile(tilex,17).fg ~= 0 do
+                getBot():hit(tilex,17)
+                sleep(200)
+                setting.reconnect(param,"",tilex,17)
+            end
+            attempt = attempt + 1
+        end
+        if attempt >= 10 then
+            break
+        end
+    end
+end
+
+setting.splice = function(item1,item2,amount)
+    local attempt = 0
+    local param = getBot():getWorld().name
+    for tilex = 35, 45 do
+        if getBot():getWorld():getTile(tilex,17).fg == 0 then
+            getBot():findPath(tilex,17)
+            sleep(30)
+            setting.reconnect(param,"",tilex,17)
+            while getBot():getWorld():getTile(tilex,17).fg == 0 do
+                getBot():place(tilex,17,item1)
+                sleep(200)
+                setting.reconnect(param,"",tilex,17)
+            end
+            while getBot():getWorld():getTile(tilex,17).fg == item1 do
+                getBot():place(tilex,17,item2)
+                sleep(200)
+                setting.reconnect(param,"",tilex,17)
+            end
+            attempt = attempt + 1
+        end
+        if attempt >= amount then
+            break
+        end
+    end
+end
+
+setting.breakBlock = function(id,target)
+    local param = getBot():getWorld().name
+    while getBot():getInventory():getItemCount(id+1) < target do
+        while getBot():getWorld():getTile(getBot().x,getBot().y-1).fg == 0 do
+            getBot():place(getBot().x,getBot().y-1,id)
+            sleep(210)
+            setting.reconnect(param,"",getBot().x,getBot().y)
+        end
+        while getBot():getWorld():getTile(getBot().x,getBot().y-1).fg ~= 0 do
+            getBot():hit(getBot().x,getBot().y-1)
+            sleep(210)
+            setting.reconnect(param,"",getBot().x,getBot().y)
+        end
+        sleep(500)
+    end
+end
+
+setting.hookworld = function(var, netid)
+    if var:get(0):getString() == "OnDialogRequest" then
+        if var:get(1):getString():find("myWorldsUiTab") then
+            getBot():warp(var:get(1):getString():match("add_button|(%w+)|"))
+        end
+    end
+end
+
+setting.algorithm = function()
+    getBot().legit_mode = false
+    getBot().collect_range = 3
+    getBot().collect_interval = 200
+    getBot().object_collect_delay = 110
+    getBot().auto_collect = true
+    for _, tile in pairs(getBot():getWorld():getTiles()) do
+        if tile.fg == 11 and tile:canHarvest() then
+            setting.htree(3,5)
+            sleep(200)
+            setting.placedirt()
+            sleep(200)
+            setting.dirts(20)
+            sleep(200)
+            setting.findDirt(11)
+            setting.planting(3,10)
+            sleep(31000)
+            setting.ttree(3)
+            sleep(200)
+            setting.htree(11,10)
+            sleep(200)
+            for i = 1,5 do
+                getBot():drop(11,200)
+                sleep(2000)
+            end
+            sleep(200)
+            setting.htree(5,9)
+            sleep(200)
+            setting.breakBlock(4,10)
+            sleep(200)
+            setting.findDirt(12)
+            sleep(200)
+            setting.splice(3,5,10)
+            sleep(68000)
+            setting.ttree(101)
+            sleep(200)
+            setting.placeWood()
+            sleep(200)
+            setting.breakWood()
+            sleep(200)
+            setting.splice(101,3,1)
+            sleep(122000)
+            getBot():hit(getBot().x,getBot().y)
+            sleep(1000)
+        end
+    end
+    getBot().auto_collect = false
+end
+
+setting.mainscript = function()
+    if skipquest then
+        while not getBot():isInWorld() do
+            setting.warp(getBot().name,"")
+        end
+        addEvent(Event.variantlist, setting.hookworld)
+        runThread(function()
+            getBot():sendPacket(2, "action|wrench\n|netid|"..getLocal().netid)
+            sleep(1000)
+            getBot():sendPacket(2, "action|dialog_return\ndialog_name|popup\nnetID|"..getLocal().netid.."|\nbuttonClicked|my_worlds")
+            sleep(1000)
+        end)    
+        listenEvents(5)
+        setting.algorithm()
+    end
+    setting.recycles()
+    getBot().auto_collect = false
+    while findItem(7752) == 0 do
+        setting.takegourmet()
+        sleep(3000)
+    end
+    for _, pack in pairs(itemId) do
+        while findItem(pack) ~= 200 do
+            setting.takeingre()
+            sleep(3000)
+        end
+    end
+    world = setting.split(worldCook[index],"[^:]+")[1]
+    door = setting.split(worldCook[index],"[^:]+")[2]
+    setting.warp(world,door,delaywarp)
+end
+
+setting.oven =  function(ex,ye,id,temp)
+    getBot():place(getBot().x+ex,getBot().y+ye,id)
+    sleep(500)
+    getBot():sendPacket(2,'action|dialog_return\ndialog_name|oven\ntilex|'..getBot().x+ex..'|\ntiley|'..getBot().y+ye..'|\ncookthis|'..id..'|\nbuttonClicked|'..temp..'\n\ndisplay_timer|0')
+    sleep(1000)
+end
+
+setting.instantcook = function()
+    ::BACK::
+    world = setting.split(worldCook[index],"[^:]+")[1]
+    door = setting.split(worldCook[index],"[^:]+")[2]
+    if getBot().level >= maxlevel then
+        setting.storingingre()
+        setting.storingGourmet()
+        setting.writeFile("LevelingSuccess",""..getBot().name.."")
+        setting.backupacc()
+        setting.mainscript()
+        goto BACK
+    end
+    setting.param = 0
+    setting.botline = setting.idxs + 1
+    for _,tile in pairs(getBot():getWorld():getTiles()) do
+        for strs,bot in pairs(getBots()) do
+            if bot.name == getBot().name then
+                findPath(posX - setting.param,posY)
+                sleep(2000)
+                setting.reconnect(world,door,posX,posY)
+                break
+            else
+                setting.param = setting.param + setting.botline
+            end
+        end
+        break
+    end
+    botX = getBot().x
+    botY = getBot().y
+    for _, pack in pairs(itemId) do
+        while getBot():getInventory():getItemCount(pack) > 25 do  
+            for k = -2,2 do
+                for n = -2,2 do
+                    if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                        setting.oven(n,k,4562,'low')
+                        setting.reconnectcook(world,cook,botX,botY)
+                    end
+                end
+            end
+            for k = -2,2 do
+                for n = -2,2 do
+                    if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                        getBot():place(getBot().x+n,getBot().y+k,874)
+                        sleep(550)
+                        setting.reconnectcook(world,cook,botX,botY)
+                    end
+                end
+            end
+            sleep(9930)
+            for k = -2,2 do
+                for n = -2,2 do
+                    if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                        getBot():place(getBot().x+n,getBot().y+k,868)
+                        sleep(550)
+                        setting.reconnectcook(world,cook,botX,botY)
+                    end
+                end
+            end
+            for k = -2,2 do
+                for n = -2,2 do
+                    if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                        getBot():place(getBot().x+n,getBot().y+k,196)
+                        sleep(550)
+                        setting.reconnectcook(world,cook,botX,botY)
+                    end
+                end
+            end
+            sleep(4950)
+            for k = -2,2 do
+                for n = -2,2 do
+                    if getTile(getBot().x+n,getBot().y+k).fg == 4618 then
+                        getBot():hit(getBot().x+n,getBot().y+k)
+                        sleep(550)
+                        setting.reconnectcook(world,cook,botX,botY)
+                    end
+                end
+            end
+            sleep(1500)
+            if getBot().level >= maxlevel then
+                setting.storingingre()
+                setting.storingGourmet()
+                setting.writeFile("LevelingSuccess",""..getBot().name.."")
+                setting.backupacc()
+                setting.mainscript()
+                goto BACK
+            end
+            if findItem(4596) > 150 then
+                setting.storingitems()
+                goto BACK
+            end
+        end
+        setting.takeingre()
+        sleep(3000)
+        setting.warp(world,door,delaywarp)
+        goto BACK
+    end
+end
+
+setting.backupacc = function()
+    ::BACK::
+    for i = setting.backup, #backups do
+        thread = setting.split(backups[i],"([^|]+)")[1]
+        threading = setting.split(backups[i],"([^|]+)")[2]
+        getBot():updateBot(thread,threading)
+        sleep(5000)
+        getBot().auto_reconnect = false
+        while getBot().status ~= BotStatus.online do
+            getBot():connect()
+            sleep(delayreconnect)
+            if getBot().status == BotStatus.account_banned then
+                setting.writeFile("NextBotStatus","[ "..getBot().name.." ] status is Suspended")
+                removeBot()
+                sleep(2000)
+                setting.backup = setting.backup + 1
+                if setting.backup > #backups then
+                    print("["..indexbot.."]No more bots to switch, sc terminated")
+                    if removingbot then
+                        removeBot()
+                        sleep(2000)
+                    end
+                    getBot():stopScript()
+                end
+                sleep(2000)
+                goto BACK
+            end
+        end
+        if getBot().status == BotStatus.online and getBot().level < maxlevel then
+            break
+        elseif getBot().status == BotStatus.online and getBot().level >= maxlevel then
+            setting.backup = setting.backup + 1
+            if setting.backup > #backups then
+                print("["..indexbot.."]No more bots to switch, sc terminated")
+                if removingbot then
+                    removeBot()
+                    sleep(2000)
+                end
+                getBot():stopScript()
+            end
+            goto BACK
+        end
+    end
+end
+
+setting.writeFile = function(threads)
+    local file = io.open(threads,"a")
+    file:write("Reseller Dongo WKWK")
+    file:close()
+end
+
+if Information == "Script Cooking made by Caramoy's Syndicate, Link Discord : https://discord.com/invite/fTTKW8vvuq" and Category == "Free Script (if u are buyers)" then
+    setting.mainscript()
+    setting.instantcook()
+else
+    print("Reseller Dongoooo WKWKKW")
+    for i = 1, 50 do
+        setting.writeFile("Reseller Script Cooking Idiot"..i)
+    end
+end
